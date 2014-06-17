@@ -97,6 +97,7 @@ class UserController extends AbstractActionController
      */
     public function loginAction()
     {
+        $this->layout()->loginpanel = 'loginpanel';
         if ($this->zfcUserAuthentication()->hasIdentity()) {
             return $this->redirect()->toRoute($this->getOptions()->getLoginRedirectRoute());
         }

@@ -15,6 +15,7 @@
   </head>
   <body>
   <div class="container-fluid">
+    <? if(!isset($loginpanel)){ ?>
       <ul class="nav nav-pills">
         <li>
           <a href="/admin">Админ-Панель</a>
@@ -24,7 +25,8 @@
         <li><a href="/admin/author">Авторы</a></li>
         <li><a href="/">Перейти на сайт</a></li>
         <li><a  href="/admin/login/logout">Выйти</a></li>
-      </ul>  
+      </ul>
+      <?php } ?>  
     <?php echo $this->content; ?>
   </div>
   </body>

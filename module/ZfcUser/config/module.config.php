@@ -31,7 +31,7 @@ return array(
                 'type' => 'Literal',
                 'priority' => 1000,
                 'options' => array(
-                    'route' => '/user',
+                    'route' => '/admin',
                     'defaults' => array(
                         'controller' => 'zfcuser',
                         'action'     => 'index',
