@@ -1,0 +1,32 @@
+<div style="float:left; padding-right:16px;"><?php echo $this->gravatar($this->zfcUserIdentity()->getEmail()) ?></div>
+<h3><?php echo $this->translate('Hello'); ?>, <?php echo $this->zfcUserDisplayName() ?>!</h3>
+<input class="button btn_load" type="button" data-page="0" value="Загрузить 10 записей"><br>
+<a href="<?php echo $this->url('zfcuser/logout') ?>">[<?php echo $this->translate('Sign Out'); ?>]</a>
+<div style="clear:both;"></div>
+<br>
+<div class="last_post">
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$( ".btn_load" ).click(function() {
+		page = $( ".btn_load" ).attr('data-page');
+		$.ajax({
+			type: "POST",
+			 url: '<?php echo $this->url('zfcuser/json') ?>',
+			dataType : "json",   
+			data: { page: page  },
+		    success: function (data, textStatus) { // вешаем свой обработчик на функцию success		    	
+		    	page++;
+		    	$( ".btn_load" ).attr('data-page',page);
+		    	$( ".btn_load" ).val('Загрузить еще 10 записей');
+		        $.each(data, function(i, val) {    // обрабатываем полученные данные
+		          id     = val['id'];
+		          title  = val['title'];
+		          artist = val['artist'];
+		          $( ".last_post" ).append('<p data-id="'+id+'">Title: '+title+' Artist: '+artist+'</p>');
+		        });
+		    } 
+		})
+	});
+});
+</script>

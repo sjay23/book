@@ -1,0 +1,31 @@
+﻿<?php echo $this->doctype(); ?>
+
+<html>
+  <head>
+    <title>Книжный Каталог</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+        <?php echo $this->headLink()
+                        ->prependStylesheet($this->basePath() . '/css/bootstrap.min.css')
+                        ->prependStylesheet($this->basePath() . '/css/style_admin.css')?>
+        <?php echo $this->headScript()
+            ->prependFile($this->basePath() . '/js/jquery.min.js')
+            ->prependFile($this->basePath() . '/js/bootstrap.min.js')
+        ; ?>
+  </head>
+  <body>
+  <div class="container-fluid">
+      <ul class="nav nav-pills">
+        <li>
+          <a href="/admin">Админ-Панель</a>
+        </li>
+        <li><a href="/admin/book">Книги</a></li>
+        <li><a href="/admin/category">Рубрики</a></li>
+        <li><a href="/admin/author">Авторы</a></li>
+        <li><a href="/">Перейти на сайт</a></li>
+        <li><a  href="/admin/login/logout">Выйти</a></li>
+      </ul>  
+    <?php echo $this->content; ?>
+  </div>
+  </body>
+</html>
