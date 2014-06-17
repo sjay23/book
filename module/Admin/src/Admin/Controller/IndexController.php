@@ -11,14 +11,46 @@ namespace Admin\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
+use Admin\Model\Book;
+use ZfcUser\Service\User as UserService;
+ use Zend\Db\Adapter\Adapter;
 
 class IndexController extends AbstractActionController
 {
+	const ROUTE_LOGIN        = 'zfcuser/login';
+
     public function indexAction()
     {
-    	if (!$this->zfcUserAuthentication()->hasIdentity()) {
-            echo 1;
-        }        
+		if (!$this->zfcUserAuthentication()->hasIdentity()) {
+           return $this->redirect()->toRoute(static::ROUTE_LOGIN);
+        }
+        return new ViewModel();
+    }
+
+    public function bookAction()
+    {
+		if (!$this->zfcUserAuthentication()->hasIdentity()) {
+           return $this->redirect()->toRoute(static::ROUTE_LOGIN);
+        }
+        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        $book  = new Book($adapter);       
+        $books = $book->getBooks();
+
+        return new ViewModel();
+    }
+
+    public function categoryAction()
+    {
+		if (!$this->zfcUserAuthentication()->hasIdentity()) {
+           return $this->redirect()->toRoute(static::ROUTE_LOGIN);
+        }
+        return new ViewModel();
+    }
+    public function authorAction()
+    {
+		if (!$this->zfcUserAuthentication()->hasIdentity()) {
+           return $this->redirect()->toRoute(static::ROUTE_LOGIN);
+        }
         return new ViewModel();
     }
 }

@@ -50,32 +50,7 @@ return array(
                     ),
                 ),
             ),
-            'admin' => array(
-                'type'    => 'Literal',
-                'options' => array(
-                    'route'    => '/admin',
-                    'defaults' => array(
-                        '__NAMESPACE__' => 'Admin\Controller',
-                        'controller'    => 'Index',
-                        'action'        => 'index',
-                    ),
-                ),
-                'may_terminate' => true,
-                'child_routes' => array(
-                    'default' => array(
-                        'type'    => 'Segment',
-                        'options' => array(
-                            'route'    => '/[:controller[/:action]]',
-                            'constraints' => array(
-                                'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                                'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                            ),
-                            'defaults' => array(
-                            ),
-                        ),
-                    ),
-                ),
-            ),
+
         ),
     ),
     'service_manager' => array(
@@ -100,7 +75,6 @@ return array(
     'controllers' => array(
         'invokables' => array(
             'Application\Controller\Index' => 'Application\Controller\IndexController',
-            'Admin\Controller\Index' => 'Admin\Controller\IndexController'
         ),
     ),
     'view_manager' => array(

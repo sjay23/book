@@ -24,7 +24,7 @@
         <li><a href="/admin/category">Рубрики</a></li>
         <li><a href="/admin/author">Авторы</a></li>
         <li><a href="/">Перейти на сайт</a></li>
-        <li><a  href="/admin/login/logout">Выйти</a></li>
+        <li><a  href="<?php echo $this->url('zfcuser/logout') ?>">Выйти</a></li>
       </ul>
       <?php } ?>  
     <?php echo $this->content; ?>
