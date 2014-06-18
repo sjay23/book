@@ -30,10 +30,79 @@
   </div>
   <div class="span10">
     <div class="row">
-        <div class="span3">
+      <div class="span3">
+        <form class="form-horizontal"  action"" method="POST">
+        <div class="input-append ">
+        <div class="control-group">
+          <label class="control-label" for="appendedInputname">Название</label>
+          <div class="controls">
+            <input class="input-large" id="appendedInputname"<?if(isset($bookName)){?>value="<?=$bookName?>"<?}?> placeholder="Введите название книги" name="name" type="text">
+            <input type="hidden" id="avat" <?if(isset($bookImage)){?>value="<?=$bookImage?>"<?}?> name="image">
+          </div>
         </div>
-	    <div class="span6">
-	    </div>
+        <div class="control-group">
+          <label class="control-label" for="appendedInputcat_id">Авторы</label>
+          <div class="controls">   
+            <select class="input-large" name="author[]" multiple="multiple">
+              <?foreach ($authors as $author){?>
+                <?if(isset($bookAuthor[0])){?>
+                  <?$count=0;foreach ($bookAuthor as $author1){?>
+                    <?if($author1==$author['author_id']){$count++?>
+                      <option selected value="<?=$author['author_id']?>"><?=$author['name'].' '.$author['last_name']?></option>  
+                    <?}?>
+                  <?}?> 
+                  <?if($count==0){?>
+                    <option  value="<?=$author['author_id']?>"><?=$author['name'].' '.$author['last_name']?></option>  
+                  <?}?>
+                <?}else{?>
+                    <option  value="<?=$author['author_id']?>"><?=$author['name'].' '.$author['last_name']?></option>  
+                <?}?>
+              <?}?>    
+            </select>        
+          </div>
+        </div>    
+        <div class="control-group">
+          <label class="control-label" for="appendedInputcat_id">Рубрики</label>
+          <div class="controls">  
+            <select class="input-large" name="cat[]" multiple="multiple">
+              <?foreach ($categories as $cat){?>
+                <?if(isset($bookCat[0])){?>
+                  <?$count=0;foreach ($bookCat as $cat1){?>
+                    <?if($cat1==$cat['category_id']){$count++?>
+                       <option selected value="<?=$cat['category_id']?>"><?=$cat['name']?></option>  
+                    <?}?>
+                  <?}?> 
+                  <?if($count==0){?>
+                       <option value="<?=$cat['category_id']?>"><?=$cat['name']?></option>    
+                  <?}?>
+                <?}else{?>
+                      <option value="<?=$cat['category_id']?>"><?=$cat['name']?></option>  
+                <?}?>
+                   
+              <?}?>    
+            </select>  
+            </div>
+        </div>   
+        <div class="control-group">
+          <div class="controls">
+             <button class="btn btn-primary" name="btn_addbook" type="submit">Добавить</button>
+          </div>
+        </div>    
+          
+        </div>  
+      </form>   
+    </div>
+    <div class="span6">
+      <form class="form-horizontal" id="upload-image" action"" method="POST">  
+         <div class="control-group">
+          <label class="control-label" for="image">Картинка</label>
+          <div class="controls">
+            <input type="button" class="btn btn-primary" id="upload" value="Загрузить картинку"> <br> <br> 
+            <img id="image_load"  width="100px" <?if(isset($bookImage)){?>src="<?=$bookImage?>"<?}else{?>src="/img/loading_100x100.gif" style="display:none;"<?}?>>
+          </div>
+        </div> 
+      </form>  
+    </div>
     </div>
 	<table class="table table_href table-striped">
         <thead>
@@ -53,7 +122,7 @@
           <tr>
             <td><?=$book['data']['book_id']?></td>
             <td><?=$book['data']['name']?></td>
-            <td><img width="50px" height="50px" src="<?=$book['image']?>"></td>
+            <td><img width="50px" height="50px" src="<?=$book['data']['image']?>"></td>
             <td>
               <?foreach ($book['categories'] as $key => $cat_p) {
                   if(count($book['categories'])-1!=$key){
@@ -74,7 +143,7 @@
             </td>
             <td><a href="/book?id=<?=$book['data']['book_id']?>"><i class="icon-eye-open" title="Просмотр"></i></a></td>
             <td><a href="#myModal"  data-toggle="modal"><i data-id="<?=$book['data']['book_id']?>" class="icon-edit" title="Редактировать"></i></a></td>
-            <td><a href="/admin/book/delete?id=<?=$book['data']['book_id']?>"><i class="icon-remove" title="Удалить"></i></a></td>
+            <td><a href="/admin/deletebook?id=<?=$book['data']['book_id']?>"><i class="icon-remove" title="Удалить"></i></a></td>
           </tr>
           <?}}?>
         </tbody>
@@ -82,3 +151,44 @@
 
   </div>
 </div>
+<script src="/js/ajaxupload.3.5.js" charset="utf-8"></script>
+<script type="text/javascript">
+$(document).ready(function() { 
+  var btnUpload=$('#upload');
+  text1='<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>';
+  text2='</strong></div>';
+    new AjaxUpload(btnUpload, {
+      action: 'saveimage',
+      name: 'image',
+      onSubmit: function(file, ext){
+         if (! (ext && /^(jpg|png|jpeg|gif)$/.test(ext))){ 
+                    // extension is not allowed 
+          text3='Поддерживаемые форматы JPG, PNG или GIF';
+          text=text1+text3+text2; 
+
+          $(".err_mess").empty();
+          $(".err_mess").append(text);
+          $('#image_load').css('display','none');
+          return false;
+        }      
+        $('#image_load').attr('src','/img/loading_100x100.gif');
+        $('#image_load').css('display','block');
+      },
+      onComplete: function(file, response){
+            var obj = jQuery.parseJSON(response);
+          if(obj.success)
+          {
+            $('#image_load').attr('src',obj.image);
+            $('#avat').val(obj.image);
+          }
+          if (obj.error) {
+              text3=obj.error;
+              text=text1+text3+text2;
+              $(".err_mess").empty();
+              $(".err_mess").append(text);
+              $('#image_load').css('display','none');
+          }
+      }
+    });
+}); 
+</script>

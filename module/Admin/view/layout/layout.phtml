@@ -5,13 +5,14 @@
     <title>Книжный Каталог</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
+     <script src="http://code.jquery.com/jquery.js"></script>
         <?php echo $this->headLink()
                         ->prependStylesheet($this->basePath() . '/css/bootstrap.min.css')
                         ->prependStylesheet($this->basePath() . '/css/style_admin.css')?>
         <?php echo $this->headScript()
-            ->prependFile($this->basePath() . '/js/jquery.min.js')
             ->prependFile($this->basePath() . '/js/bootstrap.min.js')
         ; ?>
+       
   </head>
   <body>
   <div class="container-fluid">

@@ -5,6 +5,7 @@ use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Select;
 use Zend\Db\Adapter\Adapter;
 use Zend\Paginator\Adapter\DbSelect;
+
 class Book
 {
     protected $adapter;
@@ -51,7 +52,52 @@ class Book
         
         return $result;
     }
-    
-    
+  public function AddBook($data)
+  {
+
+        $sql    = new Sql($this->adapter);
+        $insert = $sql->insert('book'); 
+        $newData = array('name'=> $data['name']);
+        $insert->values($newData);
+        $sqlString = $sql->getSqlStringForSqlObject($insert);
+        $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);  
+        $book_id = $this->adapter->getDriver()->getLastGeneratedValue();
+
+        $cats = explode(',', $data['cat']);
+        foreach ($cats as $cat) {
+            $insert = $sql->insert('book_to_cat'); 
+            $newData = array('book_id'=> $book_id , 'category_id' => $cat);
+            $insert->values($newData);
+            $sqlString = $sql->getSqlStringForSqlObject($insert);
+            $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
+        }    
+
+        $authors = explode(',', $data['author']);
+        foreach ($authors as $author) {
+            $insert = $sql->insert('book_to_author'); 
+            $newData = array('book_id'=> $book_id , 'author_id' => $author);
+            $insert->values($newData);
+            $sqlString = $sql->getSqlStringForSqlObject($insert);
+            $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
+        }    
+
+    return $book_id;
+  } 
+  public function DeleteBook($id)
+  {
+    $sql    = new Sql($this->adapter);
+    $delete = $sql->delete()->from('book')->where('book_id='.$id);
+    $sqlString = $sql->getSqlStringForSqlObject($delete);
+    $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
+    $delete = $sql->delete()->from('book_to_cat')->where('book_id='.$id);
+    $sqlString = $sql->getSqlStringForSqlObject($delete);
+    $sqlString = $sql->getSqlStringForSqlObject($delete);
+    $delete = $sql->delete()->from('book_to_author')->where('book_id='.$id);
+    $sqlString = $sql->getSqlStringForSqlObject($delete);
+    $sqlString = $sql->getSqlStringForSqlObject($delete);
+
+
+    return TRUE;
+  }   
     
 }
