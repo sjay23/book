@@ -194,6 +194,45 @@ $(document).ready(function() {
 </script>
 <script type="text/javascript">
 $(document).ready(function() { 
+  var btnUpload=$('#upload1');
+  text1='<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>';
+  text2='</strong></div>';
+    new AjaxUpload(btnUpload, {
+      action: 'saveimage',
+      name: 'image',
+      onSubmit: function(file, ext){
+         if (! (ext && /^(jpg|png|jpeg|gif)$/.test(ext))){ 
+                    // extension is not allowed 
+          text3='Поддерживаемые форматы JPG, PNG или GIF';
+          text=text1+text3+text2; 
+
+          $(".err_mess_form").empty();
+          $(".err_mess_form").append(text);
+          $('#image_load_form').css('display','none');
+          return false;
+        }      
+        $('#image_load_form').attr('src','/img/loading_100x100.gif');
+        $('#image_load_form').css('display','block');
+      },
+      onComplete: function(file, response){
+            var obj = jQuery.parseJSON(response);
+          if(obj.success)
+          {
+            $('#image_load_form').attr('src',obj.image);
+          }
+          if (obj.error) {
+              text3=obj.error;
+              text=text1+text3+text2;
+              $(".err_mess_form").empty();
+              $(".err_mess_form").append(text);
+              $('#image_load_form').css('display','none');
+          }
+      }
+    });
+}); 
+</script>
+<script type="text/javascript">
+$(document).ready(function() { 
 $( ".span10 .table_href" ).on( "click", ".icon-edit", function() {
   id=$(this).data( "id");
   $.ajax({

@@ -307,7 +307,7 @@ class IndexController extends AbstractActionController
                 $type_image = substr(strrchr($bookImage, '.'), 1);
                 $new_image  = '/upload/book/book-' . $res . '.' . $type_image;
                 if ($bookImage != $new_image) {
-                    rename(DIR . $bookImage, DIR . $new_image);
+                    rename(DIR .'/public'. $bookImage, DIR .'/public'. $new_image);
                 }
                 $book->EditImageBook($new_image, $res);
                 $data['success'] = '';
