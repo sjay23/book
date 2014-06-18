@@ -1,13 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.0.8
+-- version 3.4.10.1deb1
 -- http://www.phpmyadmin.net
 --
 -- Хост: localhost
--- Время создания: Июн 17 2014 г., 05:22
--- Версия сервера: 5.5.34-cll-lve
--- Версия PHP: 5.3.17
+-- Время создания: Июн 17 2014 г., 19:09
+-- Версия сервера: 5.5.37
+-- Версия PHP: 5.3.10-1ubuntu3.11
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 
@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- База данных: `netpeak`
+-- База данных: `book`
 --
 
 -- --------------------------------------------------------
@@ -187,6 +187,30 @@ CREATE TABLE IF NOT EXISTS `roles_users` (
 INSERT INTO `roles_users` (`user_id`, `role_id`) VALUES
 (1, 1),
 (1, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `user`
+--
+
+CREATE TABLE IF NOT EXISTS `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `username` text,
+  `display_name` text,
+  `email` text NOT NULL,
+  `password` text NOT NULL,
+  `state` varchar(80) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+
+--
+-- Дамп данных таблицы `user`
+--
+
+INSERT INTO `user` (`id`, `user_id`, `username`, `display_name`, `email`, `password`, `state`) VALUES
+(3, 0, NULL, NULL, 'sjay23@mail.ru', '$2y$14$tFBfun5rrp3/bJ6uyhWC..2OF90c70KyiJ7AjH74r1EVHl0a.LhrC', NULL);
 
 -- --------------------------------------------------------
 

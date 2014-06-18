@@ -1,1 +1,84 @@
-﻿Книги
+﻿<?if(isset($success)){?>
+<div class="alert alert-success">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <strong>Успешно Добавлено!</strong>
+</div>
+<?}?>
+<div class="succ_mess"></div>
+<?if(isset($book_delete)){?>
+<div class="alert alert-success">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <strong>Успешно Удалена!</strong>
+</div>
+<?}?>
+<?if(isset($book_edit)){?>
+<div class="alert alert-success">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <strong>Успешно Удалена!</strong>
+</div>
+<?}?>
+<div class="err_mess"></div>
+<?if(isset($errors)){?>
+<div class="alert alert-error">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong><?=implode('<br>',$errors)?></strong>  
+</div>
+<?}?>
+<div class="row">
+  <div class="span2">
+  	Книги
+  </div>
+  <div class="span10">
+    <div class="row">
+        <div class="span3">
+        </div>
+	    <div class="span6">
+	    </div>
+    </div>
+	<table class="table table_href table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Название</th>
+            <th>Фото</th>
+            <th>Категория</th>
+            <th>Автор</th>
+            <th>Просмотр</th>
+            <th>Редактирование</th>
+            <th>Удаление</th>
+          </tr>
+        </thead>
+        <tbody>
+        	<? if(!empty($books)) { foreach ($books as $book){?>
+          <tr>
+            <td><?=$book['data']['book_id']?></td>
+            <td><?=$book['data']['name']?></td>
+            <td><img width="50px" height="50px" src="<?=$book['image']?>"></td>
+            <td>
+              <?foreach ($book['categories'] as $key => $cat_p) {
+                  if(count($book['categories'])-1!=$key){
+                    echo $cat_p['name'].'<br>';
+                  }else{
+                     echo $cat_p['name'];
+                  }
+              }?>
+            </td>
+            <td>
+              <?foreach ($book['authors'] as $key => $author_p) {
+                  if(count($book['authors'])-1!=$key){
+                    echo $author_p['name'].' '.$author_p['last_name'].'<br>';
+                  }else{
+                    echo $author_p['name'].' '.$author_p['last_name'];
+                  }
+              }?>
+            </td>
+            <td><a href="/book?id=<?=$book['data']['book_id']?>"><i class="icon-eye-open" title="Просмотр"></i></a></td>
+            <td><a href="#myModal"  data-toggle="modal"><i data-id="<?=$book['data']['book_id']?>" class="icon-edit" title="Редактировать"></i></a></td>
+            <td><a href="/admin/book/delete?id=<?=$book['data']['book_id']?>"><i class="icon-remove" title="Удалить"></i></a></td>
+          </tr>
+          <?}}?>
+        </tbody>
+      </table>    	
+
+  </div>
+</div>

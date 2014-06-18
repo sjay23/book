@@ -36,7 +36,7 @@ class IndexController extends AbstractActionController
         $book  = new Book($adapter);       
         $books = $book->getBooks();
 
-        return new ViewModel();
+        return new ViewModel(array('books'=>$books));
     }
 
     public function categoryAction()
