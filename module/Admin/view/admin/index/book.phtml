@@ -192,3 +192,126 @@ $(document).ready(function() {
     });
 }); 
 </script>
+<script type="text/javascript">
+$(document).ready(function() { 
+$( ".span10 .table_href" ).on( "click", ".icon-edit", function() {
+  id=$(this).data( "id");
+  $.ajax({
+      type:"GET",
+      url: '/admin/getbook',
+      data:"id="+id,
+      success: function(response) {
+        var data = JSON.parse( response );
+        jQuery.each( data.categories, function( i, val ) {
+          $( ".cat"+val.category_id).attr('selected','selected');
+        });
+        jQuery.each( data.authors, function( i, val ) {
+          $( ".author"+val.author_id).attr('selected','selected');
+        });
+        $( "#Inputname").val(data.data[0].name);
+        $( "#image_load_form").attr('src',data.data[0].image);
+        $( "#Inputname").data( "id",id);
+      }
+  });
+});
+
+$( ".btn_editbook" ).click(function() {
+  id=$( "#Inputname" ).data( "id");
+  name=$( "#Inputname" ).val();
+  image=$( "#image_load_form" ).attr('src');
+  author=$(".author_book option:selected").val();
+  var cat = new Array();
+  $("option.cat_book:selected").each(function() {
+    cat.push($(this).val());
+  });
+  var author = new Array();
+  $("option.author_book:selected").each(function() {
+    author.push($(this).val());
+  });
+  $.ajax({
+      type:"POST",
+      url: '/admin/editbook',
+      data:"id="+id+"&name="+name+"&image="+image+"&cat="+cat+"&author="+author,
+      success: function(response) {
+        var data = JSON.parse( response );
+          if (typeof data.errors != 'undefined') {
+              text1='<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>';
+              text2='</strong></div>';
+              var text3='';
+              jQuery.each( data.errors, function( i, val ) {
+
+                console.log(val);
+                  text3+=val+' ';
+              });
+              text=text1+text3+text2;
+              $(".err_mess_form").empty();
+              $(".err_mess_form").append(text);
+          }
+          if (typeof data.success != 'undefined') {
+              $('#myModal').modal('hide');
+              text='<div class="alert alert-success edit_success"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Успешно изменено!</strong></div>';
+              $(".succ_mess").empty();
+              $(".err_mess_form").empty();
+              $(".succ_mess").append(text);
+              $(".table_href").load("/admin/book .table");
+          }
+      }
+  });
+
+});
+});
+</script>
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Изменить Книгу</h3>
+  </div>
+  <div class="modal-body">
+    <div class="err_mess_form"></div>
+      <form class="form-horizontal" id="upload-image" action"" method="POST">  
+         <div class="control-group">
+          <label class="control-label" for="image">Картинка</label>
+          <div class="controls">
+            <input type="button"  class="btn btn-primary"  id="upload1" value="Изменить картинку"> <br> <br> 
+            <img id="image_load_form" width="100px" src="/img/loading_100x100.gif">
+          </div>
+        </div> 
+      </form>
+
+      <form class="form-horizontal"  action"" method="POST">
+      <div class="input-append ">
+      <div class="control-group">
+        <label class="control-label" for="Inputname">Название</label>
+        <div class="controls">
+          <input class="input-large" id="Inputname" data-id="" placeholder="Введите название книги"  name="name" type="text">
+          <input type="hidden" id="avat" name="image">
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">Авторы</label>
+        <div class="controls">  
+          <select class="input-large" name="author[]" multiple="multiple">
+            <?foreach ($authors as $author){?>
+             <option  class="input-large author_book author<?=$author['author_id']?>" value="<?=$author['author_id']?>"><?=$author['name'].' '.$author['last_name']?></option>  
+            <?}?>    
+          </select>        
+        </div>
+      </div>            
+      <div class="control-group">
+        <label class="control-label">Рубрики</label>
+        <div class="controls"> 
+          <select class="input-large" name="cat[]" multiple="multiple">
+            <?foreach ($categories as $cat){?>
+             <option class="input-large cat_book cat<?=$cat['category_id']?>" value="<?=$cat['category_id']?>"><?=$cat['name']?></option>  
+            <?}?>    
+          </select>            
+        </div>
+      </div>   
+      </div>  
+    </form>       
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Закрыть</button>
+    <button class="btn btn-primary btn_editbook">Сохранить</button>
+  </div>
+</div>

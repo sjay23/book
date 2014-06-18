@@ -52,6 +52,42 @@ class Book
         
         return $result;
     }
+  public function GetBook($id)
+  {
+        $sql    = new Sql($this->adapter);
+        $select = $sql->select()->from('book')->order('data_added DESC')->where('book_id =' . $id);
+        
+        $sqlString = $sql->getSqlStringForSqlObject($select);
+        $results   = $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
+        $results   = $results->toArray();
+        if (!isset($results[0]['book_id']))
+            return FALSE;
+
+            $select = $sql->select()->from('book_to_cat')
+                                    ->join('category', 'book_to_cat.category_id = category.category_id')
+                                    ->where('book_to_cat.book_id =' . $id);
+            
+            $sqlString = $sql->getSqlStringForSqlObject($select);
+            $cats      = $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
+            $cats      = $cats->toArray();
+            
+            $select = $sql->select()->from('book_to_author')
+                                    ->join('author', 'book_to_author.author_id = author.author_id')
+                                    ->where('book_to_author.book_id =' . $id);
+            
+            $sqlString = $sql->getSqlStringForSqlObject($select);
+            $authors   = $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
+            $authors   = $authors->toArray();
+            $result  = array(
+                'data' => $results,
+                'categories' => $cats,
+                'authors' => $authors
+            );
+
+        
+        
+        return $result;
+  }
   public function AddBook($data)
   {
 
@@ -91,13 +127,68 @@ class Book
     $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
     $delete = $sql->delete()->from('book_to_cat')->where('book_id='.$id);
     $sqlString = $sql->getSqlStringForSqlObject($delete);
-    $sqlString = $sql->getSqlStringForSqlObject($delete);
+    $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
     $delete = $sql->delete()->from('book_to_author')->where('book_id='.$id);
     $sqlString = $sql->getSqlStringForSqlObject($delete);
-    $sqlString = $sql->getSqlStringForSqlObject($delete);
+    $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
 
 
     return TRUE;
   }   
+  public function EditImageBook($image, $id)
+  {
+    $sql    = new Sql($this->adapter);
+    $update = $sql->update();
+    $update->table('book');
+     $update->set(array(
+          'image' => $image
+     ));
+    $update->where(array('book_id'=>$id));
+    $sqlString = $sql->getSqlStringForSqlObject($update);
+    $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
+    return TRUE;
+  }   
+  public function EditBook($data)
+  {
+    $sql    = new Sql($this->adapter);
+    $update = $sql->update();
+    $update->table('book');
+     $update->set(array(
+          'name' => $data['name']
+     ));
+    $update->where(array('book_id'=>$data['id']));
+    $sqlString = $sql->getSqlStringForSqlObject($update);
+    $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
+
+
+    $delete = $sql->delete()->from('book_to_cat')->where('book_id='.$data['id']);
+    $sqlString = $sql->getSqlStringForSqlObject($delete);
+    $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
+
+    $delete = $sql->delete()->from('book_to_author')->where('book_id='.$data['id']);
+    $sqlString = $sql->getSqlStringForSqlObject($delete);
+    $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);   
+
+
+    $cats = explode(',',$data['cat']);
+    foreach ($cats as $cat) {
+        $insert = $sql->insert('book_to_cat'); 
+        $newData = array('book_id'=> $data['id'] , 'category_id' => $cat);
+        $insert->values($newData);
+        $sqlString = $sql->getSqlStringForSqlObject($insert);
+        $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
+    }
+
+    $authors = explode(',',$data['author']);
+    foreach ($authors as $author) {
+        $insert = $sql->insert('book_to_author'); 
+        $newData = array('book_id'=> $data['id'] , 'author_id' => $author);
+        $insert->values($newData);
+        $sqlString = $sql->getSqlStringForSqlObject($insert);
+        $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
+    }    
+
+    return $data['id'];
+  } 
     
 }

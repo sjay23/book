@@ -39,6 +39,9 @@ class IndexController extends AbstractActionController
            return $this->redirect()->toRoute(static::ROUTE_LOGIN);
         }
         $session = new Container('book_delete');
+        $data['book_delete'] = $session->success;
+
+        $session = new Container('success');
         $data['success'] = $session->success;
 
         $data=array();
@@ -107,6 +110,17 @@ class IndexController extends AbstractActionController
                     'author' => $bookAuthor,
                     'cat'    => $bookCat
                 ));
+                if ($res) {
+                    $type_image = substr(strrchr($bookImage, '.'), 1);
+                    $new_image  = '/upload/book/book-' . $res . '.' . $type_image;
+                    rename(DIR .'/public'. $bookImage, DIR .'/public'. $new_image);
+                    $book->EditImageBook($new_image, $res);
+                    $session = new Container('success');
+                    $session->success = 'success';
+                   $this->redirect()->toUrl('/admin/book');
+                } else {
+                    $data['errors'] = $book->getErrors();
+                }
             }
 
         }
@@ -239,5 +253,72 @@ class IndexController extends AbstractActionController
             }
         }
        
+    }
+
+    public function getbookAction()
+    {
+        $data = array();
+        $adapter    = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        $book    = new Book($adapter); 
+        $json=''; 
+        if (isset($_GET['id'])) {
+            $bookid = $_GET['id'];
+            $book   = $book->GetBook($bookid);
+            $json=json_encode($book);
+        }
+        $view    = new ViewModel(array('json'=>$json));
+        $view->setTerminal(true);
+        return $view;
+    }
+
+    public function editbookAction()
+    {
+        $data = array();
+        $adapter    = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        $book    = new Book($adapter); 
+        
+        if (isset($_POST['id']) && isset($_POST['name'])) {
+            $bookid     = $_POST['id'];
+            $bookname   = $_POST['name'];
+            $bookAuthor = $_POST['author'];
+            $bookCat    = $_POST['cat'];
+            $bookImage  = $_POST['image'];
+            $image      = false;
+            
+            if (!empty($bookImage)) {
+                if (file_exists(DIR .'/public'. $bookImage)) {
+                    $image = DIR .'/public'. $bookImage;
+                } else {
+                    $image = false;
+                }
+            }
+            
+            $data_book = array(
+                'id'     => $bookid,
+                'name'   => trim(htmlspecialchars($bookname)),
+                'image'  => $image,
+                'cat'    => $bookCat,
+                'author' => $bookAuthor
+            );
+            
+            $res = $book->EditBook($data_book);
+            
+            if ($res) {
+                $type_image = substr(strrchr($bookImage, '.'), 1);
+                $new_image  = '/upload/book/book-' . $res . '.' . $type_image;
+                if ($bookImage != $new_image) {
+                    rename(DIR . $bookImage, DIR . $new_image);
+                }
+                $book->EditImageBook($new_image, $res);
+                $data['success'] = '';
+            } else {
+                #$data['errors'] = $book->getErrors();
+            }
+            
+        }
+        $json=json_encode($data);
+        $view    = new ViewModel(array('json'=>$json));
+        $view->setTerminal(true);
+        return $view;
     }
 }
