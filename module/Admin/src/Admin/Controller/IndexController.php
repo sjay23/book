@@ -143,7 +143,99 @@ class IndexController extends AbstractActionController
 		if (!$this->zfcUserAuthentication()->hasIdentity()) {
            return $this->redirect()->toRoute(static::ROUTE_LOGIN);
         }
-        return new ViewModel();
+        
+        $data     = array();
+        $adapter    = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');       
+        $category   = new Category($adapter);  
+        if (isset($_POST['btn_addcat'])) {
+            $categoryName = $_POST['name'];
+            
+            $res = $category->AddCategory(array(
+                'name' => trim(htmlspecialchars($categoryName))
+            ));
+            
+            if ($res) {
+                $data['success'] = '';
+            } else {
+                $data['errors'] = '';
+            }
+        }
+        
+        $categories         = $category->getCategories();
+        $data['categories'] = $categories;
+
+
+        return new ViewModel($data);
+       
+    }
+
+
+    
+    public function deletecategoryAction()
+    {
+        if (!$this->zfcUserAuthentication()->hasIdentity()) {
+           return $this->redirect()->toRoute(static::ROUTE_LOGIN);
+        }
+
+        $data     = array();
+        $adapter    = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');       
+        $category   = new Category($adapter); 
+        
+        if (isset($_GET['id'])) {
+            $catid = $_GET['id'];
+                
+            $res = $category->DeleteCategory($catid);
+
+            return new ViewModel($data);
+        }
+        $this->redirect()->toUrl('/admin/category');
+    }
+    
+    public function getcategoryAction()
+    {
+        $data = array();
+        $adapter    = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        $category    = new Category($adapter); 
+        $json=''; 
+        if (isset($_GET['id'])) {
+            $categoryid = $_GET['id'];
+            $category   = $book->GetCategory($categoryid);
+            $json=json_encode($category);
+        }
+        $view    = new ViewModel(array('json'=>$json));
+        $view->setTerminal(true);
+        return $view;
+    }
+    
+    public function editcategoryAction()
+    {
+
+        $data = array();
+        $adapter    = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        $category    = new Category($adapter); 
+
+        if (isset($_POST['id']) && isset($_POST['name'])) {
+            $catid    = $_POST['id'];
+            $catname  = $_POST['name'];
+            $data_cat = array(
+                'id'   => $catid,
+                'name' => trim(htmlspecialchars($catname))
+            );
+            
+            $res = $category->EditCategory($data_cat);
+            
+            if ($res) {
+                $data['success'] = '';
+            } else {
+                $data['errors'] = '';
+            }
+            
+        }
+
+        $json=json_encode($data);
+        $view    = new ViewModel(array('json'=>$json));
+        $view->setTerminal(true);
+        return $view;
     }
 
     public function deletebookAction()
