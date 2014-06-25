@@ -1,0 +1,64 @@
+<?if(isset($author_all)){?>
+	<div class="what-we-do container">
+        <div class="row">
+            <div class="portfolio-navigator span12">
+                <h4 class="filter-portfolio">
+                    <a class="all" href="/">Главная</a> /
+                    <a class="web-design" id="active-imgs" href="/author">Все авторы</a>
+                </h4>
+            </div>
+        </div>
+	    <div class="row">
+	    	<?foreach ($authors as  $author) {?>
+	            <div class="service span3">
+	                <div class="icon-awesome">
+	                    <a href="<?=$author['href']?>">
+	                    	<i class="icon-user"></i>
+	                    </a>
+	                </div>
+	                <a href="<?=$author['href']?>">
+	                	<h4><?=$author['name'] . ' ' . $author['last_name']?></h4>
+	                
+	            </div>
+	        <?}?>
+	    </div>
+	</div>
+<?}else{?>	        
+    <div class="portfolio portfolio-page container">
+        <div class="row">
+            <div class="portfolio-navigator span12">
+                <h4 class="filter-portfolio">
+                    <a class="all" href="/">Главная</a> /
+                    <?if(isset($author)){?>
+                    	<a class="web-design" id="active-imgs" href="<?=$author['href']?>"><?=$author['name']?></a>
+                    <?}?>
+                </h4>
+            </div>
+        </div>
+        <div class="row">
+            <ul class="portfolio-img">
+            	<?if(isset($books)){foreach($books as $book){?>
+	                <li data-id="p-<?=$book['book_id']?>" class="span3">
+	                    <div class="work">
+	                        <a href="<?=$book['href']?>">
+	                            <img src="<?=$book['image']?>" alt="">
+	                        </a>
+	                        <p class="authors">
+		                        <?foreach ($book['author'] as $key => $author) {?>
+		                        	<?if(count($book['author'])-1!=$key){?>
+		                        	<a href="<?=$author['href']?>"><?=$author['name'] . ' ' . $author['last_name']?></a>,
+		                        	<?}else{?>
+		                        	<a href="<?=$author['href']?>"><?=$author['name'] . ' ' . $author['last_name']?></a>
+		                        	<?}?>
+		                    	<?}?>
+		                    </p>	
+	                        <h4><?=$book['name']?></h4>	                        	                        
+	                    </div>
+	                </li>
+				<?}}else{?>
+					<h3>Пока нету книг с таким автором :(</h3>
+				<?}?>
+            </ul>
+        </div>
+    </div>
+<?}?>    

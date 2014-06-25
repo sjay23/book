@@ -1,7 +1,8 @@
 <?php echo $this->doctype(); ?>
-
 <html lang="en">
+
     <head>
+
         <meta charset="utf-8">
         <?php echo $this->headTitle('ZF2 '. $this->translate('Skeleton Application'))->setSeparator(' - ')->setAutoEscape(false) ?>
 
@@ -11,10 +12,15 @@
         ?>
 
         <!-- Le styles -->
-        <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
-                        ->prependStylesheet($this->basePath() . '/css/style.css')
-                        ->prependStylesheet($this->basePath() . '/css/bootstrap-theme.min.css')
-                        ->prependStylesheet($this->basePath() . '/css/bootstrap.min.css') ?>
+        <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => 'assets/ico/favicon.ico'))
+                        ->prependStylesheet($this->basePath() . 'http://fonts.googleapis.com/css?family=Open+Sans:400italic,400')
+                        ->prependStylesheet($this->basePath() . 'http://fonts.googleapis.com/css?family=Droid+Sans')
+                        ->prependStylesheet($this->basePath() . 'assets/bootstrap/css/bootstrap.min.css')
+                        ->prependStylesheet($this->basePath() . 'assets/prettyPhoto/css/prettyPhoto.css')
+                        ->prependStylesheet($this->basePath() . 'assets/css/flexslider.css')
+                        ->prependStylesheet($this->basePath() . 'assets/css/font-awesome.css')
+                        ->prependStylesheet($this->basePath() . 'assets/css/style.css')
+                        ->prependStylesheet($this->basePath() . 'http://fonts.googleapis.com/css?family=Lobster') ?>
 
         <!-- Scripts -->
         <?php echo $this->headScript()
@@ -24,32 +30,90 @@
             ->prependFile($this->basePath() . '/js/html5shiv.js',   'text/javascript', array('conditional' => 'lt IE 9',))
         ; ?>
 
+
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+            <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+
+
     </head>
+
     <body>
-        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="<?php echo $this->url('home') ?>"><img src="<?php echo $this->basePath('img/zf2-logo.png') ?>" alt="Zend Framework 2"/>&nbsp;<?php echo $this->translate('Skeleton Application') ?></a>
-                </div>
-                <div class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav">
-                        <li class="active"><a href="<?php echo $this->url('home') ?>"><?php echo $this->translate('Home') ?></a></li>
-                    </ul>
-                </div><!--/.nav-collapse -->
-            </div>
-        </nav>
+
+        <!-- Header -->
         <div class="container">
-            <?php echo $this->content; ?>
-            <hr>
-            <footer>
-                <p>&copy; 2005 - <?php echo date('Y') ?> by Zend Technologies Ltd. <?php echo $this->translate('All rights reserved.') ?></p>
-            </footer>
-        </div> <!-- /container -->
-        <?php echo $this->inlineScript() ?>
+            <div class="header row">
+                <div class="span12">
+                    <div class="navbar">
+                        <div class="navbar-inner">
+                            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </a>
+                            <h1>
+                                <a class="brand" href="/">Andia - a super cool design agency...</a>
+                            </h1>
+                            <div class="nav-collapse collapse">
+                                <ul class="nav pull-right">
+                                    <li <?if(isset($active_menu)&&$active_menu=='home'){?>class="current-page"<?}?>>
+                                        <a href="/"><i class="icon-home"></i><br />Главная</a>
+                                    </li>
+                                    <li <?if(isset($active_menu)&&$active_menu=='book'){?>class="current-page"<?}?>>
+                                        <a href="/book"><i class="icon-book"></i><br />Книги</a>
+                                    </li>
+                                    <li <?if(isset($active_menu)&&$active_menu=='cat'){?>class="current-page"<?}?>>
+                                        <a href="/cat"><i class="icon-folder-open"></i><br />Рубрики</a>
+                                    </li>
+                                    <li <?if(isset($active_menu)&&$active_menu=='author'){?>class="current-page"<?}?>>
+                                        <a href="/author"><i class="icon-user"></i><br />Авторы</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php echo $this->content; ?>
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <div class="widget span3">
+                        <h4>О Сайте</h4>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et.</p>
+                        <p><a href="">Read more...</a></p>
+                    </div>
+                    <div class="widget span3">
+                    </div>
+                    <div class="widget span3">
+                    </div>
+                    <div class="widget span3">
+                        <h4>Контакты</h4>
+                    </div>
+                </div>
+                <div class="footer-border"></div>
+                <div class="row">
+                    <div class="copyright span4">
+                        <p>Copyright 2014 Stas Sherbak.All rights reserved.<br> Template by <a href="http://azmind.com">Azmind</a>.</p>
+                    </div>
+                    <div class="social span8">
+                        <a class="facebook" href=""></a>
+                        <a class="dribbble" href=""></a>
+                        <a class="twitter" href=""></a>
+                        <a class="pinterest" href=""></a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+
+
     </body>
+
 </html>
+
+

@@ -1,0 +1,82 @@
+<div class="portfolio portfolio-page container">
+	<?if(isset($books_all)){?>  
+    <div class="row">
+        <div class="portfolio-navigator span12">
+            <h4 class="filter-portfolio">
+                <a class="all" href="/">Главная</a> /
+                <a class="web-design" id="active-imgs" href="/book">Все книги</a>
+            </h4>
+        </div>
+    </div>
+    <div class="row">
+        <ul class="portfolio-img">
+        	<?if(isset($books)){foreach($books as $book){?>
+                <li data-id="p-<?=$book['book_id']?>" class="span3">
+                    <div class="work">
+                        <a href="<?=$book['href']?>">
+                            <img src="<?=$book['image']?>" alt="">
+                        </a>
+                        <p class="authors">
+	                        <?foreach ($book['author'] as $key => $author) {?>
+	                        	<?if(count($book['author'])-1!=$key){?>
+	                        	<a href="<?=$author['href']?>"><?=$author['name'].' '.$author['last_name']?></a>,
+	                        	<?}else{?>
+	                        	<a href="<?=$author['href']?>"><?=$author['name'].' '.$author['last_name']?></a>
+	                        	<?}?>
+	                    	<?}?>
+	                    </p>	
+                        <h4><?=$book['name']?></h4>
+                    </div>
+                </li>
+            <?}}?>
+        </ul>
+    </div>
+    <?}else{?>
+    <div class="row">
+        <div class="portfolio-navigator span12">
+            <h4 class="filter-portfolio">
+                <a class="all" href="/">Главная</a> /
+                <a class="web-design" id="active-imgs" href="<?=$book['href']?>"><?=$book['name']?></a>
+            </h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="about-us-text span12">
+                    <div class="span2">
+                        <a href="<?=$book['href']?>">
+                            <img src="<?=$book['image']?>" alt="">
+                        </a>
+                    </div>    
+                     <div class="span6"> 
+                        <h4><?=$book['name']?></h4>  
+                        <p class="authors">
+                            Автор: 
+	                        <?foreach ($book['author'] as $key => $author) {?>
+	                        	<?if(count($book['author'])-1!=$key){?>
+	                        	  <a href="<?=$author['href']?>"><?=$author['name'].' '.$author['last_name']?></a>,
+	                        	<?}else{?>
+	                        	  <a href="<?=$author['href']?>"><?=$author['name'].' '.$author['last_name']?></a>
+	                        	<?}?>
+	                    	<?}?>
+	                    </p>	  
+                        <p class="categories">
+                            Рубрика: 
+                            <?foreach ($book['cat'] as $key => $cat) {?>
+                                <?if(count($book['cat'])-1!=$key){?>
+                                    <a href="<?=$cat['href']?>"><?=$cat['name']?></a>,
+                                <?}else{?>
+                                    <a href="<?=$cat['href']?>"><?=$cat['name']?></a>
+                                <?}?>
+                            <?}?>
+                        </p>  
+                        <?if(isset($panel_admin)){?> 
+                            <p class="panel_admin">
+                                <a href="<?=$book['href_edit']?>"  data-toggle="modal"><i data-id="<?=$book['book_id']?>" class="icon-edit" title="Редактировать"></i> Редактировать</a>
+                                <a href="<?=$book['href_delete']?>"><i class="icon-remove" title="Удалить"></i> Удалить</a>
+                            </p>        
+                        <?}?>                    
+                    </div>
+        </div>
+    </div>
+    <?}?>
+</div>

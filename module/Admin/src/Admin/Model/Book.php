@@ -190,5 +190,86 @@ class Book
 
     return $data['id'];
   } 
+
+ public function GetCatBook($id_cat)
+  {
+    $sql    = new Sql($this->adapter);
     
+    $select = $sql->select()->from('book_to_cat')
+                            ->join('book', 'book.book_id = book_to_cat.book_id')
+                            ->where('book_to_cat.category_id =' . $id_cat)
+                            ->order('data_added DESC');
+    $sqlString = $sql->getSqlStringForSqlObject($select);
+    $books  = $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
+    $books   = $books->toArray();               
+
+
+    if (!isset($books[0]['book_id'])) return FALSE;
+
+    $result=array();
+    foreach ($books as $dat) {
+      $authors=$this->GetBookAuthor($dat['book_id']);
+      $cats=$this->GetBookCategory($dat['book_id']);
+      $result[]=array(
+        'data'=>$dat,
+        'authors'=>$authors,
+        'cats'=>$cats
+      );
+    }      
+    return $result;
+  }
+
+  public function GetAuthorBook($author)
+  {
+    $sql    = new Sql($this->adapter);
+    
+    $select = $sql->select()->from('book_to_author')
+                            ->join('book', 'book.book_id = book_to_author.book_id')
+                            ->where('book_to_author.author_id =' . $author)
+                            ->order('data_added DESC');
+    $sqlString = $sql->getSqlStringForSqlObject($select);
+    $books  = $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
+    $books   = $books->toArray(); 
+
+      if (!isset($books[0]['book_id'])) return FALSE;
+      $result=array();
+      foreach ($books as $dat) {
+        $authors=$this->GetBookAuthor($dat['book_id']);
+        $cats=$this->GetBookCategory($dat['book_id']);
+        $result[]=array(
+          'data'=>$dat,
+          'authors'=>$authors,
+          'cats'=>$cats
+        );
+      }      
+      return $result;
+  }
+
+  public function GetBookCategory($id)
+  {
+    $sql    = new Sql($this->adapter);
+    
+    $select = $sql->select()->from('book_to_cat')
+                            ->join('category', 'book_to_cat.category_id = category.category_id')
+                            ->where('book_to_cat.book_id =' . $id);
+    $sqlString = $sql->getSqlStringForSqlObject($select);
+    $cats  = $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
+    $cats   = $cats->toArray();    
+    return $cats;
+  }
+
+  public function GetBookAuthor($id)
+  {
+
+    $sql    = new Sql($this->adapter);
+    
+    $select = $sql->select()->from('book_to_author')
+                            ->join('author', 'book_to_author.author_id = author.author_id')
+                            ->where('book_to_author.book_id =' . $id);
+    $sqlString = $sql->getSqlStringForSqlObject($select);
+    $authors  = $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
+    $authors   = $authors->toArray();    
+       return $authors;
+  }
+
 }

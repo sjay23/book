@@ -8,7 +8,7 @@
  */
 
 namespace Admin;
-
+ use Zend\ModuleManager\ModuleManager;
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 
@@ -35,6 +35,13 @@ class Module
                 ),
             ),
         );
+    }
+    public function init(ModuleManager $moduleManager) {
+        $sharedEvents = $moduleManager->getEventManager()->getSharedManager();
+        $sharedEvents->attach(__NAMESPACE__, 'dispatch', function($e) {
+            $controller = $e->getTarget();
+            $controller->layout('adminLayout');
+        }, 100);
     }
     public function getServiceConfig()
     {
