@@ -34,7 +34,7 @@ class Category
         $results   = $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
         $results   = $results->toArray();
             
-        return $result[0];
+        return $results[0];
 
      }
     public function AddCategory($data)

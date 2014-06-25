@@ -185,7 +185,7 @@ class IndexController extends AbstractActionController
             $catid = $_GET['id'];
                 
             $res = $category->DeleteCategory($catid);
-
+            $this->redirect()->toUrl('/admin/category');
             return new ViewModel($data);
         }
         $this->redirect()->toUrl('/admin/category');
@@ -199,7 +199,7 @@ class IndexController extends AbstractActionController
         $json=''; 
         if (isset($_GET['id'])) {
             $categoryid = $_GET['id'];
-            $category   = $book->GetCategory($categoryid);
+            $category   = $category->GetCategory($categoryid);
             $json=json_encode($category);
         }
         $view    = new ViewModel(array('json'=>$json));
@@ -223,6 +223,110 @@ class IndexController extends AbstractActionController
             );
             
             $res = $category->EditCategory($data_cat);
+            
+            if ($res) {
+                $data['success'] = '';
+            } else {
+                $data['errors'] = '';
+            }
+            
+        }
+
+        $json=json_encode($data);
+        $view    = new ViewModel(array('json'=>$json));
+        $view->setTerminal(true);
+        return $view;
+    }
+
+    public function AuthorAction()
+    {
+        if (!$this->zfcUserAuthentication()->hasIdentity()) {
+           return $this->redirect()->toRoute(static::ROUTE_LOGIN);
+        }
+        
+        $data     = array();
+        $adapter    = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');       
+        $author   = new Author($adapter);  
+        if (isset($_POST['btn_addauthor'])) {
+            $authorName = $_POST['name'];
+            $authorlast_name = $_POST['last_name'];
+            
+            $res = $author->AddAuthor(array(
+                'name' => trim(htmlspecialchars($authorName)),
+                'last_name' => trim(htmlspecialchars($authorlast_name))
+            ));
+            
+            if ($res) {
+                $data['success'] = '';
+            } else {
+                $data['errors'] = '';
+            }
+        }
+        
+        $authors         = $author->getAuthors();
+        $data['authors'] = $authors;
+
+
+        return new ViewModel($data);
+       
+    }
+
+
+    
+    public function deleteauthorAction()
+    {
+        if (!$this->zfcUserAuthentication()->hasIdentity()) {
+           return $this->redirect()->toRoute(static::ROUTE_LOGIN);
+        }
+
+        $data     = array();
+        $adapter    = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');       
+        $author   = new Author($adapter); 
+        
+        if (isset($_GET['id'])) {
+            $authorid = $_GET['id'];
+                
+            $res = $author->DeleteAuthor($authorid);
+            $this->redirect()->toUrl('/admin/author');
+            return new ViewModel($data);
+        }
+        $this->redirect()->toUrl('/admin/author');
+    }
+    
+    public function getauthorAction()
+    {
+        $data = array();
+        $adapter    = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        $author    = new Author($adapter); 
+        $json=''; 
+        if (isset($_GET['id'])) {
+            $authorid = $_GET['id'];
+            $author   = $author->GetAuthor($authorid);
+            $json=json_encode($author);
+        }
+        $view    = new ViewModel(array('json'=>$json));
+        $view->setTerminal(true);
+        return $view;
+    }
+    
+    public function editauthorAction()
+    {
+
+        $data = array();
+        $adapter    = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        $author    = new Author($adapter); 
+
+        if (isset($_POST['id']) && isset($_POST['name'])) {
+            $authorid    = $_POST['id'];
+            $authorname  = $_POST['name'];
+            $authorlast_name  = $_POST['last_name'];
+            $data_author = array(
+                'id'   => $authorid,
+                'name' => trim(htmlspecialchars($authorname)),
+                'last_name' => trim(htmlspecialchars($authorlast_name))
+            );
+            
+            $res = $author->EditAuthor($data_author);
             
             if ($res) {
                 $data['success'] = '';
@@ -270,13 +374,6 @@ class IndexController extends AbstractActionController
         return new ViewModel();
     }
 
-    public function authorAction()
-    {
-		if (!$this->zfcUserAuthentication()->hasIdentity()) {
-           return $this->redirect()->toRoute(static::ROUTE_LOGIN);
-        }
-        return new ViewModel();
-    }
 
     public function saveimageAction()
     {
