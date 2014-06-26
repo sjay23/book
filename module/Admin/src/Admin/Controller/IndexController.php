@@ -17,6 +17,7 @@ use Admin\Model\Author;
 use ZfcUser\Service\User as UserService;
 use Zend\Db\Adapter\Adapter;
 use Admin\Form\CategoryForm;   
+use Admin\Form\AuthorForm;   
 use Zend\Validator\AbstractValidator;
 use Zend\Validator\NotEmpty;
 use Zend\Session\Container;
@@ -267,29 +268,35 @@ class IndexController extends AbstractActionController
         if (!$this->zfcUserAuthentication()->hasIdentity()) {
            return $this->redirect()->toRoute(static::ROUTE_LOGIN);
         }
-        
+        $form = new AuthorForm();
+
         $data     = array();
-        $adapter    = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');       
+        $adapter    = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');      
+        $request = $this->getRequest();
         $author   = new Author($adapter);  
-        if (isset($_POST['btn_addauthor'])) {
-            $authorName = $_POST['name'];
-            $authorlast_name = $_POST['last_name'];
-            
-            $res = $author->AddAuthor(array(
-                'name' => trim(htmlspecialchars($authorName)),
-                'last_name' => trim(htmlspecialchars($authorlast_name))
-            ));
-            
-            if ($res) {
-                $data['success'] = '';
-            } else {
-                $data['errors'] = '';
+        if ($request->isPost()) {
+            $form->setData($request->getPost());
+            $form->setInputFilter($author->getInputFilter());
+             if ($form->isValid()) {
+                $authorName = $_POST['name'];
+                $authorlast_name = $_POST['last_name'];
+                
+                $res = $author->AddAuthor(array(
+                    'name' => trim(htmlspecialchars($authorName)),
+                    'last_name' => trim(htmlspecialchars($authorlast_name))
+                ));
+                
+                if ($res) {
+                    $data['success'] = '';
+                } else {
+                    $data['errors'] = '';
+                }
             }
         }
         
         $authors         = $author->getAuthors();
         $data['authors'] = $authors;
-
+        $data['form'] = $form;
 
         return new ViewModel($data);
        
