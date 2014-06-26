@@ -1,4 +1,6 @@
-﻿<?if(isset($success)){?>
+﻿<? $error=$this->formElementErrors($form->get('name')); 
+?>
+<?if(isset($success)){?>
   <div class="alert alert-success">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
     <strong>Успешно Добавлено!</strong>
@@ -12,6 +14,12 @@
       <strong><?=$error?></strong>
     </div>
 <?}}?>
+<?if(isset($error)&&$error!=""){ ?>
+    <div class="alert alert-error">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <strong><?=$error?></strong>
+    </div>
+<?}?>
 <?if(isset($cat_delete)){?>
   <div class="alert">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -23,12 +31,18 @@
     	Рубрика
     </div>
     <div class="span10">
-    	<form class="form" action"" method="POST">
-			<div class="input-append">
-			  <input class="span3" id="appendedInputButton" placeholder="Введите название рубрики" name="name" type="text">
-			  <button class="btn btn-primary" name="btn_addcat" type="submit">Добавить</button>
-			</div>	
-		</form>		
+      <?php  
+       $form->setAttribute('class', 'form');
+       echo $this->form()->openTag($form); ?>
+       <div class="input-append">
+       <?php echo $this->formHidden($form->get('category_id'));
+       echo $this->formInput($form->get('name'));
+       echo $this->formSubmit($form->get('btn_addcat'));
+       ?>
+       </div> 
+       <?
+       echo $this->form()->closeTag();
+       ?>
     <div class="table_href">
   		<table class="table">
           <thead>
@@ -59,48 +73,25 @@
 <script type="text/javascript">
 $(document).ready(function() { 
 $( ".span10 .table_href" ).on( "click", ".icon-edit", function() {
-  id=$(this).data( "id");
-  $.ajax({
-      type:"GET",
-      url: '/admin/getcategory',
-      data:"id="+id,
-      success: function(response) {
-        var data = JSON.parse( response );
-        $( "#name_catedit").val(data.name);
-        $( "#name_catedit").data( "id",id);
-      }
-  });
+    idcat=$(this).data( "id");
+   $("#myModal").load("/admin/editcategory?category_id="+idcat);
 });
 
-$( ".btn_editcat" ).click(function() {
-  id=$( "#name_catedit" ).data( "id");
-  name=$( "#name_catedit" ).val();
+$( "#myModal" ).on( "click", ".btn_editcat", function() {
+  id=$( "#myModal input.span4" ).val();
+  name=$( "#myModal input.span3" ).val();
   $.ajax({
       type:"POST",
       url: '/admin/editcategory',
-      data:"id="+id+"&name="+name,
+      data:"category_id="+id+"&name="+name,
       success: function(response) {
-        var data = JSON.parse( response );
-          if (typeof data.errors != 'undefined') {
-              text1='<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>';
-              text2='</strong></div>';
-              var text3='';
-              jQuery.each( data.errors, function( i, val ) {
-                console.log(val);
-                  text3+=val+' ';
-              });
-              text=text1+text3+text2;
-              $(".err_mess").empty();
-              $(".err_mess").append(text);
-          }
-          if (typeof data.success != 'undefined') {
+        var data = response ;
               $('#myModal').modal('hide');
               text='<div class="alert alert-success edit_success"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Успешно изменено!</strong></div>';
               $(".succ_mess").empty();
               $(".err_mess").empty();
               $(".succ_mess").append(text);
               $(".table_href").load("/admin/category .table");
-          }
       }
   });
 
@@ -108,20 +99,4 @@ $( ".btn_editcat" ).click(function() {
 });
 </script>
 <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="myModalLabel">Изменить рубрику</h3>
-  </div>
-  <div class="modal-body">
-    <div class="err_mess"></div>
-    <form class="form form_edit" action"" method="POST">
-      <div class="input-append">
-        <input class="span3" id="name_catedit" data-id="" placeholder="Введите название рубрики" name="name" type="text">
-      </div>  
-    </form> 
-  </div>
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Закрыть</button>
-    <button class="btn btn-primary btn_editcat">Сохранить</button>
-  </div>
 </div>

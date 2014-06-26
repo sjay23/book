@@ -16,6 +16,7 @@ use Admin\Model\Category;
 use Admin\Model\Author;
 use ZfcUser\Service\User as UserService;
 use Zend\Db\Adapter\Adapter;
+use Admin\Form\CategoryForm;   
 use Zend\Validator\AbstractValidator;
 use Zend\Validator\NotEmpty;
 use Zend\Session\Container;
@@ -143,27 +144,32 @@ class IndexController extends AbstractActionController
 		if (!$this->zfcUserAuthentication()->hasIdentity()) {
            return $this->redirect()->toRoute(static::ROUTE_LOGIN);
         }
-        
+        $form = new CategoryForm();
         $data     = array();
+        $request = $this->getRequest();
         $adapter    = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');       
         $category   = new Category($adapter);  
-        if (isset($_POST['btn_addcat'])) {
-            $categoryName = $_POST['name'];
-            
-            $res = $category->AddCategory(array(
-                'name' => trim(htmlspecialchars($categoryName))
-            ));
-            
-            if ($res) {
-                $data['success'] = '';
-            } else {
-                $data['errors'] = '';
+        if ($request->isPost()) {
+
+            $form->setInputFilter($category->getInputFilter());
+            $form->setData($request->getPost());
+            if ($form->isValid()) {
+                $categoryName = $_POST['name'];
+                
+                $res = $category->AddCategory(array(
+                    'name' => trim(htmlspecialchars($categoryName))
+                ));
+                
+                if ($res) {
+                    $data['success'] = '';
+                } else {
+                    $data['errors'] = '';
+                }
             }
         }
-        
         $categories         = $category->getCategories();
         $data['categories'] = $categories;
-
+        $data['form']=  $form;
 
         return new ViewModel($data);
        
@@ -202,7 +208,7 @@ class IndexController extends AbstractActionController
             $category   = $category->GetCategory($categoryid);
             $json=json_encode($category);
         }
-        $view    = new ViewModel(array('json'=>$json));
+        $view    = new ViewModel(array('json'=>$category));
         $view->setTerminal(true);
         return $view;
     }
@@ -213,27 +219,45 @@ class IndexController extends AbstractActionController
         $data = array();
         $adapter    = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
         $category    = new Category($adapter); 
-
-        if (isset($_POST['id']) && isset($_POST['name'])) {
-            $catid    = $_POST['id'];
-            $catname  = $_POST['name'];
-            $data_cat = array(
-                'id'   => $catid,
-                'name' => trim(htmlspecialchars($catname))
-            );
-            
-            $res = $category->EditCategory($data_cat);
-            
-            if ($res) {
-                $data['success'] = '';
-            } else {
-                $data['errors'] = '';
+        $form = new CategoryForm();
+        if (isset($_GET['category_id'])) {
+            $categoryid = $_GET['category_id'];
+            $category1   = $category->GetCategoryobj($categoryid);
+            $data['category'] = $category1;
+            $form->bind($category1);
+        }
+        $request = $this->getRequest();
+        
+        if ($request->isPost()) {
+            $form->setData($request->getPost());
+            $form->setInputFilter($category->getInputFilter());
+           
+            if ($form->isValid()) { 
+                $data_cat = array(
+                    'category_id'   => $_POST['category_id'],
+                    'name' => trim(htmlspecialchars($_POST['name']))
+                );
+                
+                $res = $category->EditCategory($data_cat);
+                
+                if ($res) {
+                    $json['success'] = '';
+                } else {
+                    $json['errors'] = '';
+                }
+                $json=json_encode($json);
+                $data['json'] = $json;
             }
+            $data['form'] = $form;
+        }else{
             
+            
+            
+            $data['form'] = $form;
         }
 
-        $json=json_encode($data);
-        $view    = new ViewModel(array('json'=>$json));
+        
+        $view    = new ViewModel($data);
         $view->setTerminal(true);
         return $view;
     }

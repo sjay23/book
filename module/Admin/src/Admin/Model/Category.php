@@ -4,12 +4,16 @@ namespace Admin\Model;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Select;
 use Zend\Db\Adapter\Adapter;
+use Zend\Db\ResultSet\ResultSet;
 use Zend\Paginator\Adapter\DbSelect;
+use Zend\InputFilter\InputFilter;
+use Zend\InputFilter\InputFilterAwareInterface;
+use Zend\InputFilter\InputFilterInterface;
 
 class Category
 {
     protected $adapter;
-    
+    protected $inputFilter;      
     function __construct($adapter)
     {
         $this->adapter = $adapter;
@@ -37,6 +41,30 @@ class Category
         return $results[0];
 
      }
+    public function GetCategoryobj($id)
+    {
+        $sql    = new Sql($this->adapter);
+        $select = $sql->select()->from('category')->where('category_id =' . $id);
+        $statement = $this->adapter->createStatement();
+        $select->prepareStatement($this->adapter, $statement);
+        $resultSet = new ResultSet();
+        $resultSet->initialize($statement->execute());
+            
+        return $resultSet->current();
+
+     }
+
+    public function exchangeArray($data)
+    {
+        $this->id     = (isset($data['id']))     ? $data['id']     : null;
+        $this->name = (isset($data['name'])) ? $data['name'] : null;
+    }
+ 
+    // Add the following method:
+    public function getArrayCopy()
+    {
+        return get_object_vars($this);
+    }
     public function AddCategory($data)
     {
 
@@ -59,7 +87,7 @@ class Category
          $update->set(array(
              'name'=>htmlspecialchars($data['name'])
          ));
-        $update->where(array('category_id'=>$data['id']));
+        $update->where(array('category_id'=>$data['category_id']));
         $sqlString = $sql->getSqlStringForSqlObject($update);
         $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
 
@@ -75,6 +103,45 @@ class Category
         $delete = $sql->delete()->from('book_to_cat')->where('category_id='.$id);
         $sqlString = $sql->getSqlStringForSqlObject($delete);
         $this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
-    }    
+    } 
+
+     public function getInputFilter()
+     {
+         if (!$this->inputFilter) {
+             $inputFilter = new InputFilter();
+
+             $inputFilter->add(array(
+                 'name'     => 'category_id',
+                 'required' => true,
+                 'filters'  => array(
+                     array('name' => 'Int'),
+                 ),
+             ));
+
+             $inputFilter->add(array(
+                 'name'     => 'name',
+                 'required' => true,
+                 'filters'  => array(
+                     array('name' => 'StripTags'),
+                     array('name' => 'StringTrim'),
+                 ),
+                 'validators' => array(
+                     array(
+                         'name'    => 'StringLength',
+                         'options' => array(
+                             'encoding' => 'UTF-8',
+                             'min'      => 1,
+                             'max'      => 64,
+                         ),
+                     ),
+                 ),
+             ));
+
+
+             $this->inputFilter = $inputFilter;
+         }
+
+         return $this->inputFilter;
+     }
 
 }
